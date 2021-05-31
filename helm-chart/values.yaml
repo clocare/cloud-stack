@@ -1,4 +1,0 @@
-app:
-    image: nginx
-    affinity: false
-    replicas: 2
