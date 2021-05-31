@@ -1,35 +1,50 @@
 import yaml,json,subprocess
 
 command = subprocess.run('terraform output -json controller_local_ips', capture_output=True,shell=True)
-controller_local_ips=json.loads(command.stdout)['controller_local_ips']
+controller_local_ips=json.loads(command.stdout)
 
 command = subprocess.run('terraform output -json controller_public_ips', capture_output=True,shell=True)
-controller_public_ips=json.loads(command.stdout)['controller_public_ips']
+controller_public_ips=json.loads(command.stdout)
 
 command = subprocess.run('terraform output -json worker_local_ips', capture_output=True,shell=True)
-worker_local_ips=json.loads(command.stdout)['worker_local_ips']
+worker_local_ips=json.loads(command.stdout)
 
 command = subprocess.run('terraform output -json worker_public_ips', capture_output=True,shell=True)
-worker_public_ips=json.loads(command.stdout)['worker_public_ips']
+worker_public_ips=json.loads(command.stdout)
 
 cluster = yaml.load('''
 services:
   etcd:
+    image: ""
+    ca_cert: ""
+    cert: ""
+    key: ""
+    path: ""
     uid: 0
     gid: 0
+    retention: ""
+    creation: ""
   kube-api:
+    image: ""
     service_cluster_ip_range: 10.43.0.0/16
+    service_node_port_range: ""
     pod_security_policy: false
     always_pull_images: false
   kube-controller:
+    image: ""
     cluster_cidr: 10.42.0.0/16
     service_cluster_ip_range: 10.43.0.0/16
+  scheduler:
+    image: ""
   kubelet:
+    image: ""
     cluster_domain: cluster.local
     infra_container_image: ""
     cluster_dns_server: 10.43.0.10
     fail_swap_on: false
     generate_serving_certificate: false
+  kubeproxy:
+    image: ""
 network:
   plugin: calico
   mtu: 0
@@ -85,16 +100,39 @@ ssh_cert_path: ""
 ssh_agent_auth: false
 authorization:
   mode: rbac
+  options: {}
+kubernetes_version: ""
 ingress:
+  provider: ""
+  options: {}
   http_port: 0
   https_port: 0
-cluster_name: "clokube"
+  network_mode: ""
+  tolerations: []
+  default_http_backend_priority_class_name: ""
+  nginx_ingress_controller_priority_class_name: ""
+cluster_name: ""
+cloud_provider:
+  name: ""
+prefix_path: ""
+win_prefix_path: ""
 addon_job_timeout: 0
+bastion_host:
+  address: ""
+  port: ""
+  user: ""
+  ssh_key: ""
+  ssh_key_path: ""
+  ssh_cert: ""
+  ssh_cert_path: ""
+monitoring:
+  provider: ""
+  metrics_server_priority_class_name: ""
 restore:
   restore: false
   snapshot_name: ""
 rotate_encryption_key: false
-''', Loader=yaml.FullLoader)
+dns: null''', Loader=yaml.FullLoader)
 
 cluster['nodes'] = []
 

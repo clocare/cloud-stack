@@ -12,3 +12,9 @@ fi
 echo "creating k8s cluster"
 chmod +x rke
 ./rke up
+
+echo "setting up kubeconfig file"
+mkdir --parents ~/.kube
+mv -f kube_config_cluster.yml ~/.kube/config
+
+echo "cluster deployed successfully, now you can use kubectl command"
